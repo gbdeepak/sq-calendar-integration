@@ -2,9 +2,9 @@ const fs = require("fs");
 const fsp = require("fs").promises;
 const keys = require("./keys");
 
-const ICS_USERS_DIR = "../backend/static/calendars/users";
-const SCHEDULES_DIR = "localhost:3000/calendars/schedules";
-const USERS_DIR = "localhost:3000/calendars/users";
+const ICS_USERS_DIR = keys.path.ICS_USERS_DIR;
+const SCHEDULES_DIR = keys.path.SCHEDULES_DIR;
+const USERS_DIR = keys.path.USERS_DIR;
 
 exports.write_file = async (content, file) => {
   await fs.exists(file, async (exists) => {
@@ -27,14 +27,6 @@ exports.create_user_file = async (user) => {
 
 exports.append_user_event = async (event, user) => {
   const filename = `${ICS_USERS_DIR}/${user.id}.ics`;
-  // var content = "";
-  // await fs.exists(filename, (exists) => {
-  //   if (!exists) {
-  //     content = `Top of file\n${event}`;
-  //     console.log(`Now will write \n${content}`);
-  //   } else content = event;
-  // });
-  // console.log(`Now will write content\n${content}`);
   await fsp.appendFile(filename, event);
 };
 
@@ -92,7 +84,7 @@ exports.build_html = (teams, users, schedules, filename, schedule_dir) => {
         <td>${team.name}</td>
         <td>${schedule.name}</td>
         <td><a href="http://${SCHEDULES_DIR}/${schedule.id}.ics">Download</a></td>
-        <td><a href="webcal://${schedule_dir}/${schedule.id}.ics">Open</a></td>
+        <td><a href="webcal://${SCHEDULES_DIR}/${schedule.id}.ics">Open</a></td>
       </tr>
         `;
     });

@@ -18,15 +18,14 @@ const fsExtra = require("fs-extra");
 const uuid = require("uuid");
 const sq = require("./config/sq_api_calls");
 const hf = require("./config/helper_functions");
+const keys = require("./config/keys");
 
-// API Key - main parameter - required
-const API_KEY =
-  "41190cd87b0c6a27345bf77ad2498170a04b98709ff596d3706c0a2e16df20fe9184538c14e36ecd519ce2b3214cbedcde46378f97cfaf7ec687d2a7b98e1e60";
-const ICS_SCHEDULES_DIR = "../backend/static/calendars/schedules";
-const ICS_USERS_DIR = "../backend/static/calendars/users";
-const CALENDAR_HTML_FILE = `../backend/static/calendars/index.html`;
-const SCHEDULES_DIR = "localhost:3000/calendars/schedules";
-const CALENDAR_LIST_FILE = "../backend/static/calendars.html";
+const API_KEY = keys.api_key;
+const ICS_SCHEDULES_DIR = keys.path.ICS_SCHEDULES_DIR;
+const ICS_USERS_DIR = keys.path.ICS_USERS_DIR;
+const CALENDAR_HTML_FILE = keys.path.CALENDAR_HTML_FILE;
+const SCHEDULES_DIR = keys.path.SCHEDULES_DIR;
+const CALENDAR_LIST_FILE = keys.path.CALENDAR_LIST_FILE;
 
 // File system stuff
 // delete the base directory files
@@ -49,10 +48,10 @@ const get_calendars = async () => {
     .getAccessToken(API_KEY)
     .then((res) => (access_token = res))
     .catch((err) => console.log(err));
-  console.log(`Done getting access token ${access_token}`);
+  //   console.log(`Done getting access token ${access_token}`);
 
   // Get all teams
-  console.log(`Getting all teams ...`);
+  console.log(`Getting teams ...`);
   await sq
     .getAllTeams(access_token)
     .then((res) => (teams = res))
@@ -66,12 +65,12 @@ const get_calendars = async () => {
     .then((res) => (users = res))
     .catch((err) => console.log(err));
   console.log(`Done getting ${users.length} users`);
-  console.log(`Instantiating user_events to capture all the user events`);
+  //   console.log(`Instantiating user_events to capture all the user events`);
   //   users.forEach((user) => user_events.push({ id: user.id, events: "" }));
   users.forEach(async (user) => {
     await hf.create_user_file(user);
   });
-  console.log(`User files created`);
+  //   console.log(`User files created`);
 
   // Get all schedules
   console.log(`Getting all schedules ...`);
@@ -83,20 +82,20 @@ const get_calendars = async () => {
 
   // Get all oncall events per schedule
   await schedules.forEach(async (schedule) => {
-    console.log(
-      `Generating calendar for schedule with id ${schedule.id} and name ${schedule.name}`
-    );
-    console.log(
-      `Getting all on call events for schedule with id ${schedule.id} ...`
-    );
+    // console.log(
+    //   `Generating calendar for schedule with id ${schedule.id} and name ${schedule.name}`
+    // );
+    // console.log(
+    //   `Getting all on call events for schedule with id ${schedule.id} ...`
+    // );
     await sq
       .getAllOnCallEvents(access_token, schedule.id)
       .then((res) => (onCallEvents = res))
       .catch((err) => console.log(err));
 
-    console.log(
-      `Done getting the oncall events for schedule with id ${schedule.id} ...`
-    );
+    // console.log(
+    //   `Done getting the oncall events for schedule with id ${schedule.id} ...`
+    // );
     schedule_ics =
       "BEGIN:VCALENDAR\nVERSION:2.0\nCALSCALE:GREGORIAN\nPRODID:SQUADCAST-ICAL-1.0\n";
 
@@ -127,18 +126,6 @@ const get_calendars = async () => {
 
         // for the given user, append the event to their personal calendar
         await hf.append_user_event(event_ics, user);
-
-        // user_events.map((obj) => {
-        //   if (obj.id == user.id) {
-        //     // console.log("FOUND - Adding event");
-        //     obj.events += event_ics;
-        //   }
-        // });
-        // user_events.map((obj) => {
-        //   if (obj.id == user.id) {
-        //     console.log(`Updated event of ${obj.id} to ${obj.events}`);
-        //   }
-        // });
       });
     });
 
@@ -149,10 +136,11 @@ const get_calendars = async () => {
       schedule_ics,
       `${ICS_SCHEDULES_DIR}/${schedule.id}.ics`
     );
-    console.log(`Done generating calendar for schedule with id ${schedule.id}`);
+    // console.log(`Done generating calendar for schedule with id ${schedule.id}`);
   });
 
   // Close out all the user files
+  // HACK BELOW! Need to fix this to wait for all Promises to resolve rather than set the timeout below
   setTimeout(() => {
     users.forEach(async (user) => {
       await hf.close_user_file(user);
@@ -164,15 +152,8 @@ const get_calendars = async () => {
       CALENDAR_HTML_FILE,
       SCHEDULES_DIR
     );
+    console.log("All files have been generated");
   }, 2000);
-
-  //    console.log(`User Events is of length ${user_events.length}`);
-  //hf.write_user_files(user_events);
-  //   user_events.forEach((user_event) => {
-  //     if (user_event.events.length != 0) {
-  //       console.log(`User events for ${user_event.id}\n${user_event.events}`);
-  //     }
-  //   });
 };
 
 get_calendars();
