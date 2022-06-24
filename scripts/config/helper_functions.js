@@ -3,8 +3,8 @@ const fsp = require("fs").promises;
 const keys = require("./keys");
 
 const ICS_USERS_DIR = keys.path.ICS_USERS_DIR;
-const SCHEDULES_DIR = keys.path.SCHEDULES_DIR;
-const USERS_DIR = keys.path.USERS_DIR;
+const SCHEDULES_URL = keys.path.SCHEDULES_URL;
+const USERS_URL = keys.path.USERS_URL;
 
 exports.write_file = async (content, file) => {
   await fs.exists(file, async (exists) => {
@@ -35,13 +35,7 @@ exports.close_user_file = async (user) => {
   await fsp.appendFile(filename, `END:VCALENDAR`);
 };
 
-exports.write_user_files = (users) => {
-  users.forEach = (user) => {
-    console.log(`User event for ${user.id} is ${user.events}`);
-  };
-};
-
-exports.build_html = (teams, users, schedules, filename, schedule_dir) => {
+exports.build_html = (teams, users, schedules, filename) => {
   var stream = fs.createWriteStream(filename);
 
   stream.once("open", (fd) => {
@@ -83,8 +77,8 @@ exports.build_html = (teams, users, schedules, filename, schedule_dir) => {
         <tr>
         <td>${team.name}</td>
         <td>${schedule.name}</td>
-        <td><a href="http://${SCHEDULES_DIR}/${schedule.id}.ics">Download</a></td>
-        <td><a href="webcal://${SCHEDULES_DIR}/${schedule.id}.ics">Open</a></td>
+        <td><a href="http://${SCHEDULES_URL}/${schedule.id}.ics">Download</a></td>
+        <td><a href="webcal://${SCHEDULES_URL}/${schedule.id}.ics">Open</a></td>
       </tr>
         `;
     });
@@ -111,8 +105,8 @@ exports.build_html = (teams, users, schedules, filename, schedule_dir) => {
       users_content += `
         <tr>
         <td>${user.first_name} ${user.last_name}</td>
-        <td><a href="http://${USERS_DIR}/${user.id}.ics">Download</a></td>
-        <td><a href="webcal://${USERS_DIR}/${user.id}.ics">Open</a></td>
+        <td><a href="http://${USERS_URL}/${user.id}.ics">Download</a></td>
+        <td><a href="webcal://${USERS_URL}/${user.id}.ics">Open</a></td>
       </tr>
         `;
     });
