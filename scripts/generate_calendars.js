@@ -24,10 +24,16 @@ const API_KEY = keys.api_key;
 const ICS_SCHEDULES_DIR = keys.path.ICS_SCHEDULES_DIR;
 const ICS_USERS_DIR = keys.path.ICS_USERS_DIR;
 const CALENDAR_HTML_FILE = keys.path.CALENDAR_HTML_FILE;
-const SCHEDULES_DIR = keys.path.SCHEDULES_DIR;
-const CALENDAR_LIST_FILE = keys.path.CALENDAR_LIST_FILE;
+const SCHEDULES_URL = keys.path.SCHEDULES_URL;
+const BASE_URL = keys.path.BASE_URL;
 
 // File system stuff
+
+// create the directories if they do not exist
+if (!fs.existsSync(ICS_SCHEDULES_DIR))
+  fs.mkdirSync(ICS_SCHEDULES_DIR, { recursive: true });
+if (!fs.existsSync(ICS_USERS_DIR))
+  fs.mkdirSync(ICS_USERS_DIR, { recursive: true });
 // delete the base directory files
 fsExtra.emptyDirSync(ICS_SCHEDULES_DIR);
 fsExtra.emptyDirSync(ICS_USERS_DIR);
@@ -70,7 +76,7 @@ const get_calendars = async () => {
   users.forEach(async (user) => {
     await hf.create_user_file(user);
   });
-  //   console.log(`User files created`);
+  console.log(`User files created`);
 
   // Get all schedules
   console.log(`Getting all schedules ...`);
@@ -85,9 +91,9 @@ const get_calendars = async () => {
     // console.log(
     //   `Generating calendar for schedule with id ${schedule.id} and name ${schedule.name}`
     // );
-    // console.log(
-    //   `Getting all on call events for schedule with id ${schedule.id} ...`
-    // );
+    console.log(
+      `Getting all on call events for schedule ${schedule.name} with id ${schedule.id} ...`
+    );
     await sq
       .getAllOnCallEvents(access_token, schedule.id)
       .then((res) => (onCallEvents = res))
@@ -150,9 +156,10 @@ const get_calendars = async () => {
       active_users,
       schedules,
       CALENDAR_HTML_FILE,
-      SCHEDULES_DIR
+      SCHEDULES_URL
     );
     console.log("All files have been generated");
+    console.log(`Open your browser to ${BASE_URL}`);
   }, 2000);
 };
 
