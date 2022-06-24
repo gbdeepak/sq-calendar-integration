@@ -5,9 +5,10 @@ module.exports = {
     ICS_SCHEDULES_DIR: "../backend/static/calendars/schedules",
     ICS_USERS_DIR: "../backend/static/calendars/users",
     CALENDAR_HTML_FILE: `../backend/static/calendars/index.html`,
-    SCHEDULES_DIR: "localhost:3000/calendars/schedules",
-    USERS_DIR: "localhost:3000/calendars/users",
-    CALENDAR_LIST_FILE: "../backend/static/calendars.html",
+    SCHEDULES_URL: "localhost:3000/calendars/schedules",
+    USERS_URL: "localhost:3000/calendars/users",
+    BASE_URL: "http://localhost:3000/calendars/index.html",
+    // CALENDAR_LIST_FILE: "../backend/static/calendars.html",
   },
   squadcast: {
     GET_ACCESS_TOKEN: "https://auth.squadcast.com/oauth/access-token",
