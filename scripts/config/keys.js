@@ -1,6 +1,6 @@
 module.exports = {
   api_key:
-    "41190cd87b0c6a27345bf77ad2498170a04b98709ff596d3706c0a2e16df20fe9184538c14e36ecd519ce2b3214cbedcde46378f97cfaf7ec687d2a7b98e1e60",
+    "",
   path: {
     ICS_SCHEDULES_DIR: "../backend/static/calendars/schedules",
     ICS_USERS_DIR: "../backend/static/calendars/users",
